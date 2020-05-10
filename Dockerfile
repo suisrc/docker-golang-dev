@@ -49,7 +49,7 @@ COPY entrypoint.sh /usr/local/bin/
 
 # worksapce
 # 测试过程中发现，如果使用root账户，会导致程序部分插件没有访问User/文件夹的权限
-RUN mv /root/.local/share/code-server/User/settings2.json /root/.local/share/code-server/User/settings.json
+RUN mv /root/.local/share/code-server/User/settings2.json /root/.local/share/code-server/User/settings.json &&\
     mkdir -p /home/project && \
     chmod +x /usr/local/bin/entrypoint.sh &&\
     mkdir -p /root/.local/share/code-server/User/globalStorage

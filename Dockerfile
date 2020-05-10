@@ -1,12 +1,16 @@
-# 推荐一个最下安装版
-FROM alpine:3
+# 推荐一个最下安装版, alpine无法运行vsc的node
+# FROM alpine:3
+FROM debian:buster-slim
 
 ARG CODE_URL
 ARG CODE_RELEASE
 
 # linux and softs
 RUN echo "**** update linux ****" && \
-    apk add --no-cache openssh bash vim curl jq tar git
+    # apk add --no-cache openssh bash vim curl jq tar git
+    apt update && apt install --no-install-recommends -y \
+        dumb-init sudo ca-certificates curl git jq bash net-tools vim nano ntpdate locales &&\
+    rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
 # Code-Server
 RUN echo "**** install code-server ****" && \
@@ -37,6 +41,11 @@ RUN echo "**** install code-server extension ****" && \
 COPY ["locale.json", "/root/.local/share/code-server/User/"]
 ADD  "settings2.json", "/root/.local/share/code-server/User/settings.json"
 
+# locale & language
+RUN sed -i "s/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/g" /etc/locale.gen && locale-gen
+ENV LC_ALL=zh_CN.UTF-8 \
+    SHELL=/bin/bash
+
 COPY entrypoint.sh /usr/local/bin/
 
 # worksapce
@@ -50,7 +59,7 @@ WORKDIR  /home/project
 
 # code-server start
 EXPOSE 7000
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["dumb-init", "entrypoint.sh"]
 CMD [ "code-server", "--bind-addr", "0.0.0.0:7000", "--disable-telemetry", "--disable-updates", "/home/project"]
 
 

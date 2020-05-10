@@ -16,3 +16,18 @@ jobs:
       - name: Build image
         run: |
           docker build ./ --file ./Dockerfile --tag image
+
+      - name: Push icgear image
+        run: |
+          REGISTRY_URL=dcr.d.icgear.cn:33
+          echo "${{ secrets.ICGEAR_TOKEN }}" | docker login $REGISTRY_URL -u ${{ secrets.ICGEAR_USER }} --password-stdin
+
+          IMAGE_ID=$REGISTRY_URL/$DOCKER_IMAGE_NAME
+          echo IMAGE_ID=$IMAGE_ID
+
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')-${{ github.job }}
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo VERSION=$VERSION
+
+          docker tag image $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION

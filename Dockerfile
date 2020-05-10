@@ -38,8 +38,7 @@ RUN echo "**** install code-server extension ****" && \
     code-server --install-extension esbenp.prettier-vscode 
 
 # config for user
-COPY ["locale.json", "/root/.local/share/code-server/User/"]
-ADD  "settings2.json", "/root/.local/share/code-server/User/settings.json"
+COPY ["locale.json", "settings2.json", "/root/.local/share/code-server/User/"]
 
 # locale & language
 RUN sed -i "s/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/g" /etc/locale.gen && locale-gen
@@ -50,7 +49,8 @@ COPY entrypoint.sh /usr/local/bin/
 
 # worksapce
 # 测试过程中发现，如果使用root账户，会导致程序部分插件没有访问User/文件夹的权限
-RUN mkdir -p /home/project && \
+RUN mv /root/.local/share/code-server/User/settings2.json /root/.local/share/code-server/User/settings.json
+    mkdir -p /home/project && \
     chmod +x /usr/local/bin/entrypoint.sh &&\
     mkdir -p /root/.local/share/code-server/User/globalStorage
 

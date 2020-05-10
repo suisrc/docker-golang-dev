@@ -1,0 +1,18 @@
+on:
+  release:
+    types: [published]
+
+env:
+  GITHUB_IMAGE_NAME: vscode
+  DOCKER_IMAGE_NAME: suisrc/vscode
+
+jobs:
+  alpine:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: |
+          docker build ./ --file ./Dockerfile --tag image

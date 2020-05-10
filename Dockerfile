@@ -6,7 +6,7 @@ ARG CODE_RELEASE
 
 # linux and softs
 RUN echo "**** update linux ****" && \
-    apk add --no-cache openssh openntp vim curl jq awk tar git
+    apk add --no-cache openssh openntp vim curl jq world tar git
 
 # Code-Server
 RUN echo "**** install code-server ****" && \
